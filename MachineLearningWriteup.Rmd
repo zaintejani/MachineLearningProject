@@ -1,0 +1,68 @@
+---
+title: "Machine Learning Project Writeup"
+author: "Zain Tejani"
+date: "Sunday, February 22, 2015"
+output: html_document
+---
+
+### Introduction
+
+  Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. The data to be used was collected from accelerometers on the belt, forearm, arm, and dumbell of 6 participants performing an activity. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. These variations were classified as A, B, c, D or E. The goal was to develop a machine learning algorithm to successfully predict the type of activity based on the data collected from the accelerometers. 
+  
+  The training set contained 19622 observations, which were used to predict the 20 test case observations. The raw data can be found as csv files in the repository.
+  
+  More information is available from the website here: http://groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset).
+
+### Method Selection
+
+  Since the variable to be predicted is not linear but rather categorical, the best approach is to use a tree-based prediction model. In order to maximize accuracy using a high degree of cross validation, the Random Forest method was decided upon. Though sometimes difficult to interpret, this model gives the highest accuracy for this kind of problem.
+  
+
+### Analysis
+
+  The following packages were loaded into R, in order to train the model
+```{r cache=TRUE, results='hide'}
+library(caret); library(randomForest); library(e1071)
+```
+
+  The data was imported, and all missing values were classified as NA. Then, columns with NAs present were removed from the training set, as well as the first 7 columns, which provided no accelerometer data.
+```{r cache=TRUE}
+train<-read.csv("pml-training.csv", na.strings=c(""," ","NA"))
+test<-read.csv("pml-testing.csv", na.strings=c(""," ","NA"))
+
+train2 <- train[, !apply(train, 2, function(x) any(is.na(x)))]
+train2<-train2[,-c(1:7)]
+```
+
+  A data partition was then created, to make sample test and training sets with which to train and test the model before applying it to the final test case
+```{r cache=TRUE}
+inTrain<-createDataPartition(y=train2$classe, p=0.75, list=FALSE)
+ttrain<-train2[inTrain,]
+ttest<-train2[-inTrain,]
+```
+
+  The sample training set was then imput into the ```randomForest``` function to predict the ```classe``` variable, and the resuting model can be seen below
+```{r cache=TRUE}
+model<-randomForest(formula=classe~., data=ttrain)
+model
+```
+
+  As seen above, the model shows a high degree of accuracy, with an estimated out-of-bag error rate under 0.5% after 500 trials (trees). The highest classification error seen is under 0.01, and hence the model can be considered accurate.
+
+
+  The model was then used to predict the ```classe``` variable for the sample testing set, to gain a first-hand estimate of the models performance against previously unseen data. The results can be seen below:
+```{r cache=TRUE}
+a<-predict(model, newdata=ttest)
+confusionMatrix(a, reference=ttest$classe)
+```
+
+  As visible above, the model predicts with accuracy over 99% across a 95% confidence interval for the sample testing set. This goes to show that the model is not overfit, as similar accuracy is seen for the sample training and test sets.
+  
+  Finally, the actual test set data was processed and the model applied. The results of the prediction can be seen below:
+```{r cache=TRUE}
+test2 <- test[, !apply(test, 2, function(x) any(is.na(x)))]
+test2<-test2[,-c(1:7)]
+
+b<-predict(model, newdata=test2)
+b
+```

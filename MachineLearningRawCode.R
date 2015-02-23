@@ -31,4 +31,3 @@ test2<-test2[,-c(1:7)]
 ## Applying the model to the test data, and outputting predictions
 b<-predict(model, newdata=test2)
 b
-
