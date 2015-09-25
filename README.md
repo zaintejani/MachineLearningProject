@@ -1,1 +1,6 @@
-# MachineLearningProject
+# Machine Learning Project
+  Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. The data to be used was collected from accelerometers on the belt, forearm, arm, and dumbell of 6 participants performing an activity. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. These variations were classified as A, B, C, D or E. The goal was to develop a machine learning algorithm to successfully predict the type of activity based on the data collected from the accelerometers.
+
+  The training set contained 19622 observations, which were used to predict the 20 test case observations. Since the variable to be predicted is not linear but rather categorical, the best approach is to use a tree-based prediction model. In order to maximize accuracy using a high degree of cross validation, the Random Forest method was used. The complete analysis can be found in the  MachineLearningWriteup.html file, and the raw data can be found as csv files.
+
+  More information is available from the website here: http://groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset).
